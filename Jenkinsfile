@@ -74,6 +74,7 @@ pipeline {
             cd .apollo-base-config
             ./apollo-base-config.sh $APP_ID $TARGET_ENV $vhost
             ./apollo-item-config.sh $APP_ID $TARGET_ENV $vhost database_name cms_manager
+            ./apollo-item-config.sh $APP_ID $TARGET_ENV $vhost cms_bucket cms-bucket
             cd -
           done
         '''.stripIndent())

@@ -10,6 +10,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	mysqlconst "github.com/NpoolPlatform/go-service-framework/pkg/mysql/const"
+	ossconst "github.com/NpoolPlatform/go-service-framework/pkg/oss/const"
 	rabbitmqconst "github.com/NpoolPlatform/go-service-framework/pkg/rabbitmq/const"
 	redisconst "github.com/NpoolPlatform/go-service-framework/pkg/redis/const"
 
@@ -33,6 +34,7 @@ func main() {
 		commands,
 		mysqlconst.MysqlServiceName,
 		rabbitmqconst.RabbitMQServiceName,
+		ossconst.S3NameSpace,
 		redisconst.RedisServiceName,
 	)
 	if err != nil {

@@ -8,10 +8,14 @@ import (
 	"github.com/NpoolPlatform/cms-gateway/pkg/migrator"
 	"github.com/NpoolPlatform/go-service-framework/pkg/action"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+	"github.com/NpoolPlatform/go-service-framework/pkg/oss"
+	ossconst "github.com/NpoolPlatform/go-service-framework/pkg/oss/const"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	cli "github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
 )
+
+const BukectKey = "cms_bucket"
 
 var runCmd = &cli.Command{
 	Name:    "run",
@@ -31,6 +35,9 @@ var runCmd = &cli.Command{
 }
 
 func run(ctx context.Context) error {
+	if err := oss.Init(ossconst.SecretStoreKey, BukectKey); err != nil {
+		return err
+	}
 	if err := migrator.Migrate(ctx); err != nil {
 		return err
 	}
