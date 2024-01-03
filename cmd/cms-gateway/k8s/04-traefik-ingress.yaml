@@ -9,46 +9,22 @@ metadata:
     kubernetes.io/ingress.class: "traefik-internet"
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares:
-      kube-system-oplog@kubernetescrd,
-      kube-system-strip-cms-gateway-prefix@kubernetescrd,
       kube-system-http-redirect-https@kubernetescrd,
       kube-system-common-headers@kubernetescrd,
 
 spec:
   rules:
-    - host: api.npool.top
-      http: &http_rules
+    - host: ""
+      http: 
         paths:
-          - path: /api/cms/v1/c
+          - path: /api/cms/v1/c/{path}
             backend:
               serviceName: cms-gateway
               servicePort: 50810
-          - path: /api/cms/v1/m
+          - path: /api/cms/v1/m/{appid}/{filename}
             backend:
               serviceName: cms-gateway
               servicePort: 50810
-    - host: api.procyon.vip
-      http: *http_rules
-    - host: api.lpsecretbase.com
-      http: *http_rules
-    - host: api.ohhash.com
-      http: *http_rules
-    - host: api.procyon.xpool.top
-      http: *http_rules
-    - host: api.procyon.npool.top
-      http: *http_rules
-    - host: api.development.npool.top
-      http: *http_rules
-    - host: api.jh-testing.npool.top
-      http: *http_rules
-    - host: api.japan-procyon-production.npool.top
-      http: *http_rules
-    - host: api.hk-cryptomore-production.npool.top
-      http: *http_rules
-    - host: api.cryptomore.io
-      http: *http_rules
-    - host: api.mimo.biz
-      http: *http_rules
 
 ---
 
@@ -83,14 +59,6 @@ spec:
               serviceName: cms-gateway
               servicePort: 50810
           - path: /api/cms/v1/get/categories
-            backend:
-              serviceName: cms-gateway
-              servicePort: 50810
-          - path: /api/cms/v1/c
-            backend:
-              serviceName: cms-gateway
-              servicePort: 50810
-          - path: /api/cms/v1/m
             backend:
               serviceName: cms-gateway
               servicePort: 50810
