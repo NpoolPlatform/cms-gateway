@@ -6,6 +6,6 @@ COPY cms-gateway /app
 
 ENTRYPOINT ["/app/cms-gateway"]
 
-EXPOSE 50610 50611 50612 50613
+EXPOSE 50810 50811 50812 50813
 
 CMD ["run"]
