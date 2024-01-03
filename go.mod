@@ -3,10 +3,15 @@ module github.com/NpoolPlatform/cms-gateway
 go 1.17
 
 require (
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20231130084704-4550aabac9c7
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20231015112137-254853c60eec
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
-	github.com/NpoolPlatform/message v0.0.0-20231229071722-640b59836a61
+	github.com/NpoolPlatform/cms-middleware v0.0.0-20240103073952-14b7f88ce6de
+	github.com/NpoolPlatform/g11n-middleware v0.0.0-20231026021135-ec3cd368fc24
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20231228071122-53a5febeea97
+	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6
+	github.com/NpoolPlatform/message v0.0.0-20240103074303-d9cbd01d42ce
 	github.com/go-resty/resty/v2 v2.7.0
+	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/stretchr/testify v1.8.3
 	github.com/urfave/cli/v2 v2.17.2-0.20221006022127-8f469abc00aa
@@ -17,12 +22,29 @@ require (
 require (
 	ariga.io/atlas v0.10.0 // indirect
 	entgo.io/ent v0.12.0 // indirect
-	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.7 // indirect
 	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.16.14 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.7 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.17.5 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.12.18 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.15 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.21 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.15 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.22 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.8 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.16 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.9 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.11.21 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.13.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.16.17 // indirect
+	github.com/aws/smithy-go v1.13.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
@@ -40,7 +62,6 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
@@ -75,7 +96,6 @@ require (
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/rabbitmq/amqp091-go v1.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -93,6 +113,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
+	golang.org/x/crypto v0.0.0-20220517005047-85d78b3ac167 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
