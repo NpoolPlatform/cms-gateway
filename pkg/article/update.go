@@ -24,6 +24,21 @@ type updateHandler struct {
 	article *articlemwpb.Article
 }
 
+func (h *updateHandler) checkCategory(ctx context.Context) error {
+	if h.CategoryID == nil {
+		h.CategoryID = &h.article.CategoryID
+		return nil
+	}
+	exist, err := categorymwcli.ExistCategory(ctx, *h.CategoryID)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return fmt.Errorf("invalid category")
+	}
+	return nil
+}
+
 func (h *updateHandler) checkArticleExist(ctx context.Context) error {
 	info, err := articlemwcli.GetArticleOnly(ctx, &articlemwpb.Conds{
 		ID:    &basetypes.Uint32Val{Op: cruder.EQ, Value: *h.ID},
@@ -138,6 +153,7 @@ func (h *updateHandler) checkVersion() {
 	newVersion := h.article.Version + 1
 	h.Version = &newVersion
 	h.ArticleKey = &h.article.ArticleKey
+	h.Host = &h.article.Host
 }
 
 func (h *updateHandler) checkContent(ctx context.Context) error {
@@ -175,6 +191,9 @@ func (h *Handler) UpdateArticle(ctx context.Context) (*articlemwpb.Article, erro
 	if err := handler.checkArticleExist(ctx); err != nil {
 		return nil, err
 	}
+	if err := handler.checkCategory(ctx); err != nil {
+		return nil, err
+	}
 	if err := handler.checkTitle(ctx); err != nil {
 		return nil, err
 	}
@@ -187,8 +206,11 @@ func (h *Handler) UpdateArticle(ctx context.Context) (*articlemwpb.Article, erro
 	}
 	if h.Version != nil {
 		return articlemwcli.CreateArticle(ctx, &articlemwpb.ArticleReq{
+			AppID:      h.AppID,
 			ISO:        h.ISO,
 			CategoryID: h.CategoryID,
+			Host:       h.Host,
+			ArticleKey: h.ArticleKey,
 			AuthorID:   h.UserID,
 			Title:      h.Title,
 			Subtitle:   h.Subtitle,

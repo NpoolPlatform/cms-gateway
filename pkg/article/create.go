@@ -22,6 +22,17 @@ type createHandler struct {
 	*Handler
 }
 
+func (h *createHandler) checkCategory(ctx context.Context) error {
+	exist, err := categorymwcli.ExistCategory(ctx, *h.CategoryID)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return fmt.Errorf("invalid category")
+	}
+	return nil
+}
+
 func (h *createHandler) checkTitle(ctx context.Context) error {
 	latest := true
 	exist, err := articlemwcli.ExistArticleConds(ctx, &articlemwpb.Conds{
@@ -154,6 +165,9 @@ func (h *Handler) CreateArticle(ctx context.Context) (*articlemwpb.Article, erro
 		Handler: h,
 	}
 
+	if err := handler.checkCategory(ctx); err != nil {
+		return nil, err
+	}
 	if err := handler.checkTitle(ctx); err != nil {
 		return nil, err
 	}
