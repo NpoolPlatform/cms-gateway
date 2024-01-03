@@ -28,6 +28,18 @@ spec:
             backend:
               serviceName: cms-gateway
               servicePort: 50810
+          - path: /api/cms/v1/get/categories
+            backend:
+              serviceName: cms-gateway
+              servicePort: 50810
+          - path: /api/cms/v1/c
+            backend:
+              serviceName: cms-gateway
+              servicePort: 50810
+          - path: /api/cms/v1/m
+            backend:
+              serviceName: cms-gateway
+              servicePort: 50810
     - host: api.procyon.vip
       http: *http_rules
     - host: api.lpsecretbase.com
