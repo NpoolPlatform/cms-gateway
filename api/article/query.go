@@ -104,7 +104,7 @@ func (s *Server) GetContents(ctx context.Context, in *npool.GetContentsRequest) 
 func (s *Server) GetAppArticles(ctx context.Context, in *npool.GetAppArticlesRequest) (*npool.GetAppArticlesResponse, error) {
 	handler, err := article1.NewHandler(
 		ctx,
-		article1.WithAppID(&in.TargetAppID, true),
+		article1.WithAppID(&in.AppID, true),
 		article1.WithOffset(in.GetOffset()),
 		article1.WithLimit(in.GetLimit()),
 	)
