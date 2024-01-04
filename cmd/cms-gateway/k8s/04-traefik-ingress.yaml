@@ -9,22 +9,24 @@ metadata:
     kubernetes.io/ingress.class: "traefik-internet"
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares:
-      kube-system-http-redirect-https@kubernetescrd,
-      kube-system-common-headers@kubernetescrd,
+      kube-system-strip-cms-gateway-prefix@kubernetescrd,
+      kube-system-http-redirect-https@kubernetescrd
 
 spec:
   rules:
-    - host: ""
-      http: 
+    - host: api.npool.top
+      http: &http_rules
         paths:
-          - path: /api/cms/v1/c/{path}
+          - path: /api/cms/v1/c
             backend:
               serviceName: cms-gateway
               servicePort: 50810
-          - path: /api/cms/v1/m/{appid}/{filename}
+          - path: /api/cms/v1/m
             backend:
               serviceName: cms-gateway
               servicePort: 50810
+    - host: api.development.npool.top
+      http: *http_rules
 
 ---
 
