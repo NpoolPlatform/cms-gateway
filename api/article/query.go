@@ -3,7 +3,11 @@ package article
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"strings"
 
+	"github.com/NpoolPlatform/cms-gateway/common/servermux"
 	article1 "github.com/NpoolPlatform/cms-gateway/pkg/article"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/cms/v1"
@@ -13,6 +17,70 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func init() {
+	mux := servermux.AppServerMux()
+	mux.HandleFunc("/api/cms/v1/t/", Content)
+}
+
+func Content(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	host := r.Host
+	fmt.Println("host: ", host)
+	parts := strings.Split(path, "/")
+	fmt.Println("parts: ", parts)
+
+	for i, item := range parts {
+		fmt.Printf("i: %v, item: %v\n", i, item)
+	}
+
+	var nonEmptyParts []string
+	for _, part := range parts {
+		if part != "" {
+			nonEmptyParts = append(nonEmptyParts, part)
+		}
+	}
+	fmt.Println("nonEmptyParts: ", nonEmptyParts)
+	for i, item := range nonEmptyParts {
+		fmt.Printf("i: %v, nonitem: %v\n", i, item)
+	}
+
+	minPathLength := 7
+	if len(parts) < minPathLength {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+	contentURL := nonEmptyParts[4]
+	for i := 5; i < len(nonEmptyParts); i++ {
+		contentURL = fmt.Sprintf("%v/%v", contentURL, nonEmptyParts[i])
+	}
+	ctx := r.Context()
+	handler, err := article1.NewHandler(
+		ctx,
+		article1.WithHost(&host, true),
+		article1.WithContentURL(&contentURL, true),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetContent",
+			"Error", err,
+		)
+		fmt.Fprintf(w, "%v", err.Error())
+		return
+	}
+
+	info, err := handler.GetContent(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetContent",
+			"Error", err,
+		)
+		fmt.Fprintf(w, "%v", err.Error())
+		return
+	}
+
+	fmt.Fprintf(w, "%v", info)
+}
 
 func (s *Server) GetContent(ctx context.Context, in *npool.GetContentRequest) (*npool.GetContentResponse, error) {
 	host := ""
@@ -58,7 +126,6 @@ func (s *Server) GetContent(ctx context.Context, in *npool.GetContentRequest) (*
 		)
 		return &npool.GetContentResponse{}, status.Error(codes.Internal, err.Error())
 	}
-
 	return &npool.GetContentResponse{
 		Info: info,
 	}, nil

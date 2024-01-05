@@ -3,6 +3,7 @@ module github.com/NpoolPlatform/cms-gateway
 go 1.17
 
 require (
+	github.com/BurntSushi/toml v1.1.0
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20231130084704-4550aabac9c7
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20231015112137-254853c60eec
 	github.com/NpoolPlatform/cms-middleware v0.0.0-20240103111519-21fb57a27c09
