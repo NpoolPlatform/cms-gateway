@@ -81,9 +81,15 @@ func (h *createHandler) getGategorySlugs(ctx context.Context) (string, error) {
 	for index, info := range categories {
 		if index == 0 {
 			categorySlugs = info.Slug
+			if *h.CategoryID == info.EntID {
+				break
+			}
 			continue
 		}
 		categorySlugs = fmt.Sprintf("%v/%v", categorySlugs, info.Slug)
+		if *h.CategoryID == info.EntID {
+			break
+		}
 	}
 	return categorySlugs, nil
 }
