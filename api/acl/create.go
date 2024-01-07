@@ -2,7 +2,6 @@ package acl
 
 import (
 	"context"
-	"fmt"
 
 	acl1 "github.com/NpoolPlatform/cms-gateway/pkg/acl"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -29,7 +28,6 @@ func (s *Server) CreateACL(ctx context.Context, in *npool.CreateACLRequest) (*np
 	}
 
 	info, err := handler.CreateACL(ctx)
-	fmt.Println("info: ", info)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"CreateACL",

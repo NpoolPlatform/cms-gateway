@@ -11,9 +11,10 @@ import (
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	npool "github.com/NpoolPlatform/message/npool/cms/gw/v1/acl"
 )
 
-func (h *Handler) CreateACL(ctx context.Context) (*aclmwpb.ACL, error) {
+func (h *Handler) CreateACL(ctx context.Context) (*npool.ACL, error) {
 	exist, err := articlemwcli.ExistArticleConds(ctx, &articlemwpb.Conds{
 		AppID:      &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
 		ArticleKey: &basetypes.StringVal{Op: cruder.EQ, Value: *h.ArticleKey},
@@ -34,12 +35,17 @@ func (h *Handler) CreateACL(ctx context.Context) (*aclmwpb.ACL, error) {
 		return nil, err
 	}
 	if info != nil {
-		return info, nil
+		return h.GetACL(ctx, info)
 	}
 
-	return aclmwcli.CreateACL(ctx, &aclmwpb.ACLReq{
+	info, err = aclmwcli.CreateACL(ctx, &aclmwpb.ACLReq{
 		AppID:      h.AppID,
 		RoleID:     h.RoleID,
 		ArticleKey: h.ArticleKey,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return h.GetACL(ctx, info)
 }

@@ -7,11 +7,12 @@ import (
 	aclmwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/acl"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	npool "github.com/NpoolPlatform/message/npool/cms/mw/v1/acl"
+	npool "github.com/NpoolPlatform/message/npool/cms/gw/v1/acl"
+	aclmwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/acl"
 )
 
 func (h *Handler) DeleteACL(ctx context.Context) (*npool.ACL, error) {
-	exist, err := aclmwcli.ExistACLConds(ctx, &npool.Conds{
+	exist, err := aclmwcli.ExistACLConds(ctx, &aclmwpb.Conds{
 		ID:    &basetypes.Uint32Val{Op: cruder.EQ, Value: *h.ID},
 		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.EntID},
 		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
@@ -28,5 +29,5 @@ func (h *Handler) DeleteACL(ctx context.Context) (*npool.ACL, error) {
 		return nil, err
 	}
 
-	return info, nil
+	return h.GetACL(ctx, info)
 }

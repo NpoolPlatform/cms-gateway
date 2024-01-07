@@ -15,6 +15,7 @@ func (s *Server) GetACLs(ctx context.Context, in *npool.GetACLsRequest) (*npool.
 	handler, err := acl1.NewHandler(
 		ctx,
 		acl1.WithAppID(&in.AppID, true),
+		acl1.WithArticleKey(&in.ArticleKey, true),
 		acl1.WithOffset(in.GetOffset()),
 		acl1.WithLimit(in.GetLimit()),
 	)
