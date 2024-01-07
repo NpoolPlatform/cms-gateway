@@ -1,4 +1,3 @@
-//nolint:dupl
 package article
 
 import (
@@ -13,7 +12,6 @@ import (
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	articlemwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/article"
-	categorymwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/category"
 	applangmwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/applang"
 	"github.com/google/uuid"
 )
@@ -49,49 +47,29 @@ func (h *createHandler) checkTitle(ctx context.Context) error {
 	return nil
 }
 
-func (h *createHandler) getCategories(ctx context.Context, id string, level int32) ([]*categorymwpb.Category, error) {
-	categories := []*categorymwpb.Category{}
-	category, err := categorymwcli.GetCategory(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if category == nil {
-		return nil, fmt.Errorf("invalid categoryid")
-	}
-	categories = append(categories, category)
-
-	nullUUID := uuid.Nil.String()
-	if category.ParentID != nullUUID {
-		parentCategories, err := h.getCategories(ctx, category.ParentID, level+1)
+func (h *createHandler) getCategoryFullSlug(ctx context.Context, id string) (string, error) {
+	fullSlug := ""
+	for {
+		category, err := categorymwcli.GetCategory(ctx, id)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		categories = append(categories, parentCategories...)
-	}
-	return categories, nil
-}
-
-func (h *createHandler) getGategorySlugs(ctx context.Context) (string, error) {
-	categories, err := h.getCategories(ctx, *h.CategoryID, 0)
-	if err != nil {
-		return "", err
-	}
-	categorySlugs := ""
-
-	for index, info := range categories {
-		if index == 0 {
-			categorySlugs = info.Slug
-			if *h.CategoryID == info.EntID {
-				break
-			}
-			continue
+		if category == nil {
+			return "", fmt.Errorf("invalid categoryid")
 		}
-		categorySlugs = fmt.Sprintf("%v/%v", categorySlugs, info.Slug)
-		if *h.CategoryID == info.EntID {
+		fmt.Println("category: ", category)
+		if fullSlug == "" {
+			fullSlug = category.Slug
+		} else {
+			fullSlug = fmt.Sprintf("%v/%v", category.Slug, fullSlug)
+		}
+		nullUUID := uuid.Nil.String()
+		if category.ParentID == nullUUID {
 			break
 		}
+		id = category.ParentID
 	}
-	return categorySlugs, nil
+	return fullSlug, nil
 }
 
 func (h *createHandler) getISO(ctx context.Context) error {
@@ -123,7 +101,7 @@ func (h *createHandler) uploadContent(ctx context.Context) error {
 	version := uint32(1)
 	h.Version = &version
 
-	cateGorySlugs, err := h.getGategorySlugs(ctx)
+	cateGorySlugs, err := h.getCategoryFullSlug(ctx, *h.CategoryID)
 	if err != nil {
 		return err
 	}
@@ -170,7 +148,6 @@ func (h *Handler) CreateArticle(ctx context.Context) (*articlemwpb.Article, erro
 	handler := &createHandler{
 		Handler: h,
 	}
-
 	if err := handler.checkCategory(ctx); err != nil {
 		return nil, err
 	}
