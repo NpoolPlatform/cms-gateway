@@ -3,6 +3,7 @@ package media
 import (
 	"context"
 	"fmt"
+	"io"
 
 	constant "github.com/NpoolPlatform/cms-gateway/pkg/const"
 	mediamw "github.com/NpoolPlatform/message/npool/cms/mw/v1/media"
@@ -18,6 +19,7 @@ type Handler struct {
 	FileName  *string
 	Ext       *string
 	MediaData *string
+	FileData  io.Reader
 	Reqs      []*mediamw.MediaReq
 	Offset    int32
 	Limit     int32
@@ -122,6 +124,13 @@ func WithMediaData(data *string, must bool) func(context.Context, *Handler) erro
 			return nil
 		}
 		h.MediaData = data
+		return nil
+	}
+}
+
+func WithFileData(data io.Reader) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.FileData = data
 		return nil
 	}
 }
