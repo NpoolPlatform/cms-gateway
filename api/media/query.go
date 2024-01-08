@@ -17,7 +17,7 @@ import (
 
 func init() {
 	mux := servermux.AppServerMux()
-	mux.HandleFunc("/f/", Content)
+	mux.HandleFunc("/v1/f/", Content)
 }
 
 func Content(w http.ResponseWriter, r *http.Request) {

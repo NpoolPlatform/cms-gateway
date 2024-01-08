@@ -19,7 +19,7 @@ const MaxUploadFileSize = 10 << 20
 
 func init() {
 	mux := servermux.AppServerMux()
-	mux.HandleFunc("/upload/app/media", Upload)
+	mux.HandleFunc("/v1/upload/app/media", Upload)
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
