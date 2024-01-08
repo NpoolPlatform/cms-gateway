@@ -20,7 +20,7 @@ import (
 
 func init() {
 	mux := servermux.AppServerMux()
-	mux.HandleFunc("/api/cms/v1/t/", Content)
+	mux.HandleFunc("/t/", Content)
 }
 
 func Content(w http.ResponseWriter, r *http.Request) {
@@ -45,15 +45,16 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("i: %v, nonitem: %v\n", i, item)
 	}
 
-	minPathLength := 7
-	if len(parts) < minPathLength {
+	minPathLength := 3
+	if len(nonEmptyParts) < minPathLength {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
-	contentURL := nonEmptyParts[4]
+	contentURL := nonEmptyParts[1]
 	for i := 5; i < len(nonEmptyParts); i++ {
 		contentURL = fmt.Sprintf("%v/%v", contentURL, nonEmptyParts[i])
 	}
+	fmt.Println("contentURL: ", contentURL)
 	ctx := r.Context()
 	handler, err := article1.NewHandler(
 		ctx,

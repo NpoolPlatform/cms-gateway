@@ -19,7 +19,7 @@ const MaxUploadFileSize = 10 << 20
 
 func init() {
 	mux := servermux.AppServerMux()
-	mux.HandleFunc("/api/cms/v1/upload/app/media", Upload)
+	mux.HandleFunc("/upload/app/media", Upload)
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
@@ -36,9 +36,14 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
+	fmt.Println("file: ", file)
+
 	appID := r.FormValue("AppID")
 	userID := r.FormValue("UserID")
 	name := r.FormValue("Name")
+	fmt.Println("appID: ", appID)
+	fmt.Println("userID: ", userID)
+	fmt.Println("name: ", name)
 
 	ctx := r.Context()
 	handler, err := media1.NewHandler(

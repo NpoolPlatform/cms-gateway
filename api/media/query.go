@@ -17,7 +17,7 @@ import (
 
 func init() {
 	mux := servermux.AppServerMux()
-	mux.HandleFunc("/api/cms/v1/f/", Content)
+	mux.HandleFunc("/f/", Content)
 }
 
 func Content(w http.ResponseWriter, r *http.Request) {
@@ -40,13 +40,15 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("i: %v, nonitem: %v\n", i, item)
 	}
 
-	minPathLength := 7
+	minPathLength := 3
 	if len(parts) < minPathLength {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
-	appID := nonEmptyParts[4]
-	fileName := nonEmptyParts[5]
+	appID := nonEmptyParts[1]
+	fileName := nonEmptyParts[2]
+	fmt.Println("appID: ", appID)
+	fmt.Println("fileName: ", fileName)
 
 	ctx := r.Context()
 	handler, err := media1.NewHandler(

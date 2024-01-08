@@ -1,36 +1,6 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: cms-gateway-traefik-test-ingress
-  namespace: kube-system
-  annotations:
-    k8s.kuboard.cn/displayName: cms-gateway-traefik-test
-    k8s.kuboard.cn/workload: cms-gateway-traefik-test
-    kubernetes.io/ingress.class: "traefik-internet"
-    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-    traefik.ingress.kubernetes.io/router.middlewares:
-      kube-system-http-redirect-https@kubernetescrd
-
-spec:
-  rules:
-    - host: api.npool.top
-      http: &http_rules
-        paths:
-          - path: /api/cms/v1/t
-            backend:
-              serviceName: cms-gateway
-              servicePort: 50810
-          - path: /api/cms/v1/f
-            backend:
-              serviceName: cms-gateway
-              servicePort: 50810
-    - host: api.development.npool.top
-      http: *http_rules
-
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
   name: cms-gateway-traefik-ingress
   namespace: kube-system
   annotations:
@@ -52,6 +22,14 @@ spec:
               serviceName: cms-gateway
               servicePort: 50810
           - path: /api/cms/v1/m
+            backend:
+              serviceName: cms-gateway
+              servicePort: 50810
+          - path: /api/cms/v1/t
+            backend:
+              serviceName: cms-gateway
+              servicePort: 50810
+          - path: /api/cms/v1/f
             backend:
               serviceName: cms-gateway
               servicePort: 50810
