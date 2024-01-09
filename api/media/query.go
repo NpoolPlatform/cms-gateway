@@ -2,6 +2,7 @@ package media
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strings"
@@ -74,16 +75,21 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%v", err.Error())
 		return
 	}
+	decoded, err := base64.StdEncoding.DecodeString(string(info))
+	if err != nil {
+		http.Error(w, "Failed to decode base64 data", http.StatusBadRequest)
+		return
+	}
 
 	w.Header().Set("Content-Type", "image/jpeg")
-	w.Header().Set("Content-Length", fmt.Sprint(len((info))))
+	w.Header().Set("Content-Length", fmt.Sprint(len((decoded))))
 	w.Header().Set("Content-Disposition", "inline")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	_, err = w.Write(info)
+	_, err = w.Write(decoded)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
