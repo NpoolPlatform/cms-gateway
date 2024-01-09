@@ -50,8 +50,8 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
-	contentURL := nonEmptyParts[1]
-	for i := 5; i < len(nonEmptyParts); i++ {
+	contentURL := nonEmptyParts[2]
+	for i := 3; i < len(nonEmptyParts); i++ {
 		contentURL = fmt.Sprintf("%v/%v", contentURL, nonEmptyParts[i])
 	}
 	fmt.Println("contentURL: ", contentURL)

@@ -26,7 +26,7 @@ func (h *createHandler) checkFileExt() error {
 	return nil
 }
 
-func (h *createHandler) uploadMedia(ctx context.Context) (string, error) {
+func (h *createHandler) uploadFile(ctx context.Context) (string, error) {
 	id := uuid.NewString()
 	if h.EntID == nil {
 		h.EntID = &id
@@ -40,6 +40,26 @@ func (h *createHandler) uploadMedia(ctx context.Context) (string, error) {
 	}
 
 	if err := oss.PutObject(ctx, key, fileBytes, true); err != nil {
+		return "", err
+	}
+
+	return mediaURL, nil
+}
+
+func (h *createHandler) uploadMedia(ctx context.Context) (string, error) {
+	id := uuid.NewString()
+	if h.EntID == nil {
+		h.EntID = &id
+	}
+
+	mediaURL := fmt.Sprintf("%v%v", *h.EntID, *h.Ext)
+	key := fmt.Sprintf("media/%v/%v", *h.AppID, mediaURL)
+	content := h.MediaData
+	if content == nil || *content == "" {
+		return "", fmt.Errorf("invalid content")
+	}
+
+	if err := oss.PutObject(ctx, key, []byte(*content), true); err != nil {
 		return "", err
 	}
 
@@ -79,7 +99,7 @@ func (h *Handler) UploadFile(ctx context.Context) (*mediamwpb.Media, error) {
 		return nil, err
 	}
 
-	mediaURL, err := handler.uploadMedia(ctx)
+	mediaURL, err := handler.uploadFile(ctx)
 	if err != nil {
 		return nil, err
 	}

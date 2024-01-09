@@ -45,8 +45,8 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
-	appID := nonEmptyParts[1]
-	fileName := nonEmptyParts[2]
+	appID := nonEmptyParts[2]
+	fileName := nonEmptyParts[3]
 	fmt.Println("appID: ", appID)
 	fmt.Println("fileName: ", fileName)
 

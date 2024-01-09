@@ -62,7 +62,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info, err := handler.UploadMedia(ctx)
+	info, err := handler.UploadFile(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"UploadMedia",
