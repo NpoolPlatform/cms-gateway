@@ -17,22 +17,28 @@ type queryHandler struct {
 	categoryMap map[string]*npool.Category
 }
 
-func (h *queryHandler) buildCategoryList(infos []*categorymwpb.Category) []*npool.Category {
-	result := []*npool.Category{}
+func (h *queryHandler) buildCategoryList(infos []*categorymwpb.Category, parentID, parentSlug string) {
 	for _, info := range infos {
+		if info.ParentID != parentID {
+			continue
+		}
+		fullSlug := fmt.Sprintf("%v/%v", parentSlug, info.Slug)
+		if parentSlug == "" {
+			fullSlug = info.Slug
+		}
+		h.buildCategoryList(infos, info.EntID, fullSlug)
 		category := &npool.Category{
 			ID:       info.ID,
-			AppID:    info.AppID,
 			EntID:    info.EntID,
+			AppID:    info.AppID,
 			ParentID: info.ParentID,
 			Name:     info.Name,
 			Slug:     info.Slug,
 			Enabled:  info.Enabled,
-			FullSlug: info.Slug,
+			FullSlug: fullSlug,
 		}
-		result = append(result, category)
+		h.categoryMap[category.EntID] = category
 	}
-	return result
 }
 
 func (h *queryHandler) buildCategoryTree(infos []*categorymwpb.Category, parentID, parentSlug string) []*npool.Category {
@@ -58,46 +64,6 @@ func (h *queryHandler) buildCategoryTree(infos []*categorymwpb.Category, parentI
 		result = append(result, category)
 	}
 	return result
-}
-
-func (h *Handler) GetCategoryList(ctx context.Context) ([]*npool.Category, error) {
-	handler := &queryHandler{
-		Handler:     h,
-		categoryMap: map[string]*npool.Category{},
-	}
-
-	infos, _, err := categorymwcli.GetCategories(ctx, &categorymwpb.Conds{
-		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
-	}, h.Offset, h.Limit)
-	if err != nil {
-		return nil, err
-	}
-
-	nilUUID := uuid.Nil.String()
-	categories := handler.buildCategoryTree(infos, nilUUID, "")
-	for _, item := range handler.categoryMap {
-		fmt.Println("ITEM: ", item)
-	}
-
-	return categories, nil
-}
-
-func (h *Handler) GetCategories(ctx context.Context) ([]*npool.Category, uint32, error) {
-	handler := &queryHandler{
-		Handler:     h,
-		categoryMap: map[string]*npool.Category{},
-	}
-
-	categories, total, err := categorymwcli.GetCategories(ctx, &categorymwpb.Conds{
-		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
-	}, h.Offset, h.Limit)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	infos := handler.buildCategoryList(categories)
-
-	return infos, total, nil
 }
 
 func (h *queryHandler) getCategoryFullSlug(ctx context.Context, id string) (string, error) {
@@ -144,4 +110,57 @@ func (h *Handler) GetCategoryExt(ctx context.Context, row *categorymwpb.Category
 	}
 
 	return info, nil
+}
+
+func (h *Handler) GetCategoryList(ctx context.Context) ([]*npool.Category, error) {
+	handler := &queryHandler{
+		Handler:     h,
+		categoryMap: map[string]*npool.Category{},
+	}
+
+	infos, _, err := categorymwcli.GetCategories(ctx, &categorymwpb.Conds{
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+	}, h.Offset, h.Limit)
+	if err != nil {
+		return nil, err
+	}
+
+	nilUUID := uuid.Nil.String()
+	categories := handler.buildCategoryTree(infos, nilUUID, "")
+
+	return categories, nil
+}
+
+func (h *Handler) GetCategories(ctx context.Context) ([]*npool.Category, uint32, error) {
+	handler := &queryHandler{
+		Handler:     h,
+		categoryMap: map[string]*npool.Category{},
+	}
+
+	categories, total, err := categorymwcli.GetCategories(ctx, &categorymwpb.Conds{
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+	}, h.Offset, h.Limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	nilUUID := uuid.Nil.String()
+	handler.buildCategoryList(categories, nilUUID, "")
+
+	infos := []*npool.Category{}
+	for _, info := range handler.categoryMap {
+		category := &npool.Category{
+			ID:       info.ID,
+			EntID:    info.EntID,
+			AppID:    info.AppID,
+			ParentID: info.ParentID,
+			Name:     info.Name,
+			Slug:     info.Slug,
+			Enabled:  info.Enabled,
+			FullSlug: info.FullSlug,
+		}
+		infos = append(infos, category)
+	}
+
+	return infos, total, nil
 }
