@@ -65,6 +65,9 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 	if info == nil {
 		return "", fmt.Errorf("not found page")
 	}
+	if info.ACLEnabled && len(info.ACLRoleIDs) == 0 {
+		return "", fmt.Errorf("permission define")
+	}
 	if info.ACLEnabled && len(info.ACLRoleIDs) != 0 {
 		if h.UserID == nil {
 			return "", fmt.Errorf("permission define")
