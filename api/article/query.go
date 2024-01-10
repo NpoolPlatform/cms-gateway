@@ -79,7 +79,7 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%v", err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, "%v", info)
 }
 
