@@ -132,7 +132,7 @@ func (s *Server) GetContent(ctx context.Context, in *npool.GetContentRequest) (*
 	}, nil
 }
 
-func (s *Server) GetContents(ctx context.Context, in *npool.GetContentsRequest) (*npool.GetContentsResponse, error) {
+func (s *Server) GetContentList(ctx context.Context, in *npool.GetContentListRequest) (*npool.GetContentListResponse, error) {
 	latest := true
 	articleStatus := basetypes.ArticleStatus_Published
 	handler, err := article1.NewHandler(
@@ -146,30 +146,30 @@ func (s *Server) GetContents(ctx context.Context, in *npool.GetContentsRequest) 
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetContents",
+			"GetContentList",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetContentsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetContentListResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	infos, total, err := handler.GetArticles(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetContents",
+			"GetContentList",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetContentsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GetContentListResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.GetContentsResponse{
+	return &npool.GetContentListResponse{
 		Infos: infos,
 		Total: total,
 	}, nil
 }
 
-func (s *Server) GetAppArticles(ctx context.Context, in *npool.GetAppArticlesRequest) (*npool.GetAppArticlesResponse, error) {
+func (s *Server) GetArticles(ctx context.Context, in *npool.GetArticlesRequest) (*npool.GetArticlesResponse, error) {
 	handler, err := article1.NewHandler(
 		ctx,
 		article1.WithAppID(&in.AppID, true),
@@ -178,30 +178,30 @@ func (s *Server) GetAppArticles(ctx context.Context, in *npool.GetAppArticlesReq
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetAppArticles",
+			"GetArticles",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetAppArticlesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetArticlesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	infos, total, err := handler.GetArticles(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetAppArticles",
+			"GetArticles",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetAppArticlesResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GetArticlesResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.GetAppArticlesResponse{
+	return &npool.GetArticlesResponse{
 		Infos: infos,
 		Total: total,
 	}, nil
 }
 
-func (s *Server) GetAppArticleContent(ctx context.Context, in *npool.GetAppArticleContentRequest) (*npool.GetAppArticleContentResponse, error) {
+func (s *Server) GetArticleContent(ctx context.Context, in *npool.GetArticleContentRequest) (*npool.GetArticleContentResponse, error) {
 	handler, err := article1.NewHandler(
 		ctx,
 		article1.WithID(&in.ID, true),
@@ -210,24 +210,24 @@ func (s *Server) GetAppArticleContent(ctx context.Context, in *npool.GetAppArtic
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetAppArticleContent",
+			"GetArticleContent",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetAppArticleContentResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetArticleContentResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	info, err := handler.GetArticleContent(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetAppArticleContent",
+			"GetArticleContent",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetAppArticleContentResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GetArticleContentResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.GetAppArticleContentResponse{
+	return &npool.GetArticleContentResponse{
 		Info: info,
 	}, nil
 }

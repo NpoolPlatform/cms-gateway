@@ -25,6 +25,7 @@ func (s *Server) UpdateArticle(ctx context.Context, in *npool.UpdateArticleReque
 		article1.WithContent(in.Content, false),
 		article1.WithUpdateContent(in.UpdateContent, false),
 		article1.WithStatus(in.Status, false),
+		article1.WithACLEnabled(in.ACLEnabled, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

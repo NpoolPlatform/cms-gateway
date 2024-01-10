@@ -137,6 +137,7 @@ func (h *createHandler) createArticle(ctx context.Context) (*articlemwpb.Article
 		Host:       h.Host,
 		ISO:        h.ISO,
 		ContentURL: h.ContentURL,
+		ACLEnabled: h.ACLEnabled,
 	})
 	if err != nil {
 		return nil, err

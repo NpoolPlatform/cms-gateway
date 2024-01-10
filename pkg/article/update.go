@@ -217,6 +217,7 @@ func (h *Handler) UpdateArticle(ctx context.Context) (*articlemwpb.Article, erro
 			Status:     h.Status,
 			Version:    h.Version,
 			ContentURL: h.ContentURL,
+			ACLEnabled: h.ACLEnabled,
 		})
 	}
 
@@ -231,5 +232,6 @@ func (h *Handler) UpdateArticle(ctx context.Context) (*articlemwpb.Article, erro
 		Status:     h.Status,
 		Version:    h.Version,
 		ContentURL: h.ContentURL,
+		ACLEnabled: h.ACLEnabled,
 	})
 }

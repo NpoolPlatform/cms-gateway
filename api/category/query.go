@@ -11,10 +11,41 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+func (s *Server) GetCategoryList(ctx context.Context, in *npool.GetCategoryListRequest) (*npool.GetCategoryListResponse, error) {
+	handler, err := category1.NewHandler(
+		ctx,
+		category1.WithAppID(&in.AppID, true),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetCategoryList",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetCategoryListResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	infos, err := handler.GetCategoryList(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetCategoryList",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetCategoryListResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.GetCategoryListResponse{
+		Infos: infos,
+	}, nil
+}
+
 func (s *Server) GetCategories(ctx context.Context, in *npool.GetCategoriesRequest) (*npool.GetCategoriesResponse, error) {
 	handler, err := category1.NewHandler(
 		ctx,
 		category1.WithAppID(&in.AppID, true),
+		category1.WithOffset(in.GetOffset()),
+		category1.WithLimit(in.GetLimit()),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -25,7 +56,7 @@ func (s *Server) GetCategories(ctx context.Context, in *npool.GetCategoriesReque
 		return &npool.GetCategoriesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, err := handler.GetCategories(ctx)
+	infos, total, err := handler.GetCategories(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"GetCategories",
@@ -36,37 +67,6 @@ func (s *Server) GetCategories(ctx context.Context, in *npool.GetCategoriesReque
 	}
 
 	return &npool.GetCategoriesResponse{
-		Infos: infos,
-	}, nil
-}
-
-func (s *Server) GetAppCategories(ctx context.Context, in *npool.GetAppCategoriesRequest) (*npool.GetAppCategoriesResponse, error) {
-	handler, err := category1.NewHandler(
-		ctx,
-		category1.WithAppID(&in.AppID, true),
-		category1.WithOffset(in.GetOffset()),
-		category1.WithLimit(in.GetLimit()),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetAppCategories",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetAppCategoriesResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	infos, total, err := handler.GetCategoryList(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetAppCategories",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetAppCategoriesResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.GetAppCategoriesResponse{
 		Infos: infos,
 		Total: total,
 	}, nil

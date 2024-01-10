@@ -23,10 +23,5 @@ func (h *Handler) DeleteCategory(ctx context.Context) (*npool.Category, error) {
 		return nil, fmt.Errorf("invalid category")
 	}
 
-	info, err := categorymwcli.DeleteCategory(ctx, *h.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return info, nil
+	return categorymwcli.DeleteCategory(ctx, *h.ID)
 }

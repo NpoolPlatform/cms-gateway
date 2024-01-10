@@ -17,6 +17,24 @@ type queryHandler struct {
 	categoryMap map[string]*npool.Category
 }
 
+func (h *queryHandler) buildCategoryList(infos []*categorymwpb.Category) []*npool.Category {
+	result := []*npool.Category{}
+	for _, info := range infos {
+		category := &npool.Category{
+			ID:       info.ID,
+			AppID:    info.AppID,
+			EntID:    info.EntID,
+			ParentID: info.ParentID,
+			Name:     info.Name,
+			Slug:     info.Slug,
+			Enabled:  info.Enabled,
+			FullSlug: info.Slug,
+		}
+		result = append(result, category)
+	}
+	return result
+}
+
 func (h *queryHandler) buildCategoryTree(infos []*categorymwpb.Category, parentID, parentSlug string) []*npool.Category {
 	result := []*npool.Category{}
 	for _, info := range infos {
@@ -42,7 +60,7 @@ func (h *queryHandler) buildCategoryTree(infos []*categorymwpb.Category, parentI
 	return result
 }
 
-func (h *Handler) GetCategories(ctx context.Context) ([]*npool.Category, error) {
+func (h *Handler) GetCategoryList(ctx context.Context) ([]*npool.Category, error) {
 	handler := &queryHandler{
 		Handler:     h,
 		categoryMap: map[string]*npool.Category{},
@@ -64,8 +82,66 @@ func (h *Handler) GetCategories(ctx context.Context) ([]*npool.Category, error) 
 	return categories, nil
 }
 
-func (h *Handler) GetCategoryList(ctx context.Context) ([]*categorymwpb.Category, uint32, error) {
-	return categorymwcli.GetCategories(ctx, &categorymwpb.Conds{
+func (h *Handler) GetCategories(ctx context.Context) ([]*npool.Category, uint32, error) {
+	handler := &queryHandler{
+		Handler:     h,
+		categoryMap: map[string]*npool.Category{},
+	}
+
+	categories, total, err := categorymwcli.GetCategories(ctx, &categorymwpb.Conds{
 		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
 	}, h.Offset, h.Limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	infos := handler.buildCategoryList(categories)
+
+	return infos, total, nil
+}
+
+func (h *queryHandler) getCategoryFullSlug(ctx context.Context, id string) (string, error) {
+	fullSlug := ""
+	for {
+		category, err := categorymwcli.GetCategory(ctx, id)
+		if err != nil {
+			return "", err
+		}
+		if category == nil {
+			return "", fmt.Errorf("invalid categoryid")
+		}
+		fmt.Println("category: ", category)
+		if fullSlug == "" {
+			fullSlug = category.Slug
+		} else {
+			fullSlug = fmt.Sprintf("%v/%v", category.Slug, fullSlug)
+		}
+		nullUUID := uuid.Nil.String()
+		if category.ParentID == nullUUID {
+			break
+		}
+		id = category.ParentID
+	}
+	return fullSlug, nil
+}
+
+func (h *Handler) GetCategoryExt(ctx context.Context, row *categorymwpb.Category) (*npool.Category, error) {
+	handler := &queryHandler{
+		Handler: h,
+	}
+	fullSlug, err := handler.getCategoryFullSlug(ctx, row.EntID)
+	if err != nil {
+		return nil, err
+	}
+	info := &npool.Category{
+		ID:       row.ID,
+		EntID:    row.EntID,
+		AppID:    row.AppID,
+		ParentID: row.ParentID,
+		Name:     row.Name,
+		Slug:     row.Slug,
+		FullSlug: fullSlug,
+	}
+
+	return info, nil
 }

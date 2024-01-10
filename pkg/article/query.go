@@ -9,6 +9,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/oss"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	roleusermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/role/user"
+	types "github.com/NpoolPlatform/message/npool/basetypes/cms/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	articlemwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/article"
 )
@@ -51,10 +52,12 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 		Handler: h,
 	}
 	latest := true
+
 	info, err := articlemwcli.GetArticleOnly(ctx, &articlemwpb.Conds{
 		Host:       &basetypes.StringVal{Op: cruder.EQ, Value: *h.Host},
 		ContentURL: &basetypes.StringVal{Op: cruder.EQ, Value: *h.ContentURL},
 		Latest:     &basetypes.BoolVal{Op: cruder.EQ, Value: latest},
+		Status:     &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(types.ArticleStatus_Published)},
 	})
 	if err != nil {
 		return "", err
@@ -62,7 +65,7 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 	if info == nil {
 		return "", fmt.Errorf("not found page")
 	}
-	if len(info.ACLRoleIDs) != 0 {
+	if info.ACLEnabled && len(info.ACLRoleIDs) != 0 {
 		if h.UserID == nil {
 			return "", fmt.Errorf("permission define")
 		}

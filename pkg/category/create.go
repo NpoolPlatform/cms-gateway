@@ -8,6 +8,7 @@ import (
 	categorymwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/category"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	npool "github.com/NpoolPlatform/message/npool/cms/gw/v1/category"
 	categorymwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/category"
 	"github.com/google/uuid"
 )
@@ -79,7 +80,7 @@ func (h *createHandler) checkCagegorySlug(ctx context.Context) error {
 	return nil
 }
 
-func (h *Handler) CreateCategory(ctx context.Context) (*categorymwpb.Category, error) {
+func (h *Handler) CreateCategory(ctx context.Context) (*npool.Category, error) {
 	handler := &createHandler{
 		Handler: h,
 	}
@@ -96,11 +97,17 @@ func (h *Handler) CreateCategory(ctx context.Context) (*categorymwpb.Category, e
 		return nil, err
 	}
 
-	return categorymwcli.CreateCategory(ctx, &categorymwpb.CategoryReq{
+	info, err := categorymwcli.CreateCategory(ctx, &categorymwpb.CategoryReq{
 		AppID:    h.AppID,
 		ParentID: h.ParentID,
 		Name:     h.Name,
 		Slug:     h.Slug,
 		Enabled:  h.Enabled,
 	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return h.GetCategoryExt(ctx, info)
 }

@@ -29,6 +29,7 @@ type Handler struct {
 	ContentURL    *string
 	Version       *uint32
 	Latest        *bool
+	ACLEnabled    *bool
 	Status        *basetypes.ArticleStatus
 	Reqs          []*articlemw.ArticleReq
 	Offset        int32
@@ -262,6 +263,19 @@ func WithLatest(latest *bool, must bool) func(context.Context, *Handler) error {
 			return nil
 		}
 		h.Latest = latest
+		return nil
+	}
+}
+
+func WithACLEnabled(aclenabled *bool, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if aclenabled == nil {
+			if must {
+				return fmt.Errorf("invalid aclenabled")
+			}
+			return nil
+		}
+		h.ACLEnabled = aclenabled
 		return nil
 	}
 }
