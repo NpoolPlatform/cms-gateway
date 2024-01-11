@@ -75,19 +75,17 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 			fmt.Println("UserID or AppID is null")
 			return "", fmt.Errorf("permission define")
 		}
-		if h.UserID != &info.AuthorID {
-			exist, err := roleusermwcli.ExistUserConds(ctx, &roleusermwpb.Conds{
-				AppID:   &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
-				UserID:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.UserID},
-				RoleIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: info.ACLRoleIDs},
-			})
-			if err != nil {
-				return "", err
-			}
-			if !exist {
-				fmt.Println("acl permission define")
-				return "", fmt.Errorf("permission define")
-			}
+		exist, err := roleusermwcli.ExistUserConds(ctx, &roleusermwpb.Conds{
+			AppID:   &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+			UserID:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.UserID},
+			RoleIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: info.ACLRoleIDs},
+		})
+		if err != nil {
+			return "", err
+		}
+		if !exist {
+			fmt.Println("acl permission define")
+			return "", fmt.Errorf("permission define")
 		}
 	}
 	h.Host = &info.Host
