@@ -12,6 +12,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/cms/v1"
 	npool "github.com/NpoolPlatform/message/npool/cms/gw/v1/article"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 
 	"google.golang.org/grpc/codes"
@@ -28,7 +29,6 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	host := r.Host
 	fmt.Println("host: ", host)
 	parts := strings.Split(path, "/")
-	fmt.Println("parts: ", parts)
 
 	// 获取 HTTP 请求头部信息
 	headers := r.Header
@@ -41,10 +41,19 @@ func Content(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("%s: %s\n", name, value)
 		}
 	}
+	nilUUID := uuid.Nil.String()
 	appID := r.Header.Get("X-App-Id")
 	userID := r.Header.Get("X-User-Id")
-	fmt.Println("appID==", appID)
-	fmt.Println("userID==", userID)
+	fmt.Println("appID====", appID)
+	fmt.Println("userID====", userID)
+	if appID == "" {
+		appID = nilUUID
+	}
+	if userID == "" {
+		userID = nilUUID
+	}
+	fmt.Println("appID=====", appID)
+	fmt.Println("userID=====", userID)
 
 	for i, item := range parts {
 		fmt.Printf("i: %v, item: %v\n", i, item)

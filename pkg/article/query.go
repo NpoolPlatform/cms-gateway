@@ -65,11 +65,14 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 	if info == nil {
 		return "", fmt.Errorf("not found page")
 	}
+	fmt.Println("info.ACLEnabled: ", info.ACLEnabled)
+	fmt.Println("len(info.ACLRoleIDs): ", len(info.ACLRoleIDs))
 	if info.ACLEnabled && len(info.ACLRoleIDs) == 0 {
 		return "", fmt.Errorf("permission define")
 	}
 	if info.ACLEnabled && len(info.ACLRoleIDs) != 0 {
-		if h.UserID == nil {
+		if h.UserID == nil || h.AppID == nil {
+			fmt.Println("UserID or AppID is null")
 			return "", fmt.Errorf("permission define")
 		}
 		if h.UserID != &info.AuthorID {
@@ -82,6 +85,7 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 				return "", err
 			}
 			if !exist {
+				fmt.Println("acl permission define")
 				return "", fmt.Errorf("permission define")
 			}
 		}
