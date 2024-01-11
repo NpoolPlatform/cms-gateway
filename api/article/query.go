@@ -30,6 +30,18 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(path, "/")
 	fmt.Println("parts: ", parts)
 
+	// 获取 HTTP 请求头部信息
+	headers := r.Header
+
+	// 遍历 HTTP 请求头部信息
+	fmt.Println("header: ")
+	for name, values := range headers {
+		// 遍历每个头部信息的值
+		for _, value := range values {
+			fmt.Printf("%s: %s\n", name, value)
+		}
+	}
+
 	for i, item := range parts {
 		fmt.Printf("i: %v, item: %v\n", i, item)
 	}
