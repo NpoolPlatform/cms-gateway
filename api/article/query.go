@@ -41,6 +41,10 @@ func Content(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("%s: %s\n", name, value)
 		}
 	}
+	appID := r.Header.Get("X-App-Id")
+	userID := r.Header.Get("X-User-Id")
+	fmt.Println("appID==", appID)
+	fmt.Println("userID==", userID)
 
 	for i, item := range parts {
 		fmt.Printf("i: %v, item: %v\n", i, item)
@@ -72,6 +76,8 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		ctx,
 		article1.WithHost(&host, true),
 		article1.WithContentURL(&contentURL, true),
+		article1.WithAppID(&appID, false),
+		article1.WithUserID(&userID, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
