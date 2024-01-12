@@ -46,7 +46,6 @@ func (s *Server) CreateArticle(ctx context.Context, in *npool.CreateArticleReque
 		article1.WithDigest(&in.Digest, false),
 		article1.WithContent(&in.Content, true),
 		article1.WithHost(&host, true),
-		article1.WithACLEnabled(in.ACLEnabled, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

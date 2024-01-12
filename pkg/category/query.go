@@ -76,7 +76,6 @@ func (h *queryHandler) getCategoryFullSlug(ctx context.Context, id string) (stri
 		if category == nil {
 			return "", fmt.Errorf("invalid categoryid")
 		}
-		fmt.Println("category: ", category)
 		if fullSlug == "" {
 			fullSlug = category.Slug
 		} else {

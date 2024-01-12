@@ -18,17 +18,12 @@ import (
 
 func init() {
 	mux := servermux.AppServerMux()
-	mux.HandleFunc("/v1/f/", Content)
+	mux.HandleFunc("/v1/m/", Content)
 }
 
 func Content(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	parts := strings.Split(path, "/")
-	fmt.Println("parts: ", parts)
-
-	for i, item := range parts {
-		fmt.Printf("i: %v, item: %v\n", i, item)
-	}
 
 	var nonEmptyParts []string
 	for _, part := range parts {
@@ -36,20 +31,14 @@ func Content(w http.ResponseWriter, r *http.Request) {
 			nonEmptyParts = append(nonEmptyParts, part)
 		}
 	}
-	fmt.Println("nonEmptyParts: ", nonEmptyParts)
-	for i, item := range nonEmptyParts {
-		fmt.Printf("i: %v, nonitem: %v\n", i, item)
-	}
 
-	minPathLength := 3
+	minPathLength := 4
 	if len(parts) < minPathLength {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
 	appID := nonEmptyParts[2]
 	fileName := nonEmptyParts[3]
-	fmt.Println("appID: ", appID)
-	fmt.Println("fileName: ", fileName)
 
 	ctx := r.Context()
 	handler, err := media1.NewHandler(
@@ -94,36 +83,6 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-func (s *Server) GetMedia(ctx context.Context, in *npool.GetMediaRequest) (*npool.GetMediaResponse, error) {
-	handler, err := media1.NewHandler(
-		ctx,
-		media1.WithAppID(&in.AppID, true),
-		media1.WithFileName(&in.FileName, true),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetMedia",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetMediaResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := handler.GetMedia(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetMedia",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetMediaResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.GetMediaResponse{
-		Info: info,
-	}, nil
 }
 
 func (s *Server) GetMedias(ctx context.Context, in *npool.GetMediasRequest) (*npool.GetMediasResponse, error) {

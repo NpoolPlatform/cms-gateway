@@ -50,6 +50,9 @@ func (h *updateHandler) checkArticleExist(ctx context.Context) error {
 	if info == nil {
 		return fmt.Errorf("invalid article")
 	}
+	if !info.Latest {
+		return fmt.Errorf("invalid old version article")
+	}
 	h.article = info
 	return nil
 }

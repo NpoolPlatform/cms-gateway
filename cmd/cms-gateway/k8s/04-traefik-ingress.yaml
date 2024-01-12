@@ -25,18 +25,6 @@ spec:
             backend:
               serviceName: cms-gateway
               servicePort: 50810
-          - path: /api/cms/v1/t
-            backend:
-              serviceName: cms-gateway
-              servicePort: 50810
-          - path: /api/cms/v1/f
-            backend:
-              serviceName: cms-gateway
-              servicePort: 50810
-          - path: /api/cms/v1/upload/app/media
-            backend:
-              serviceName: cms-gateway
-              servicePort: 50810
     - host: api.development.npool.top
       http: *http_rules
 

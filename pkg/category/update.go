@@ -1,4 +1,3 @@
-//nolint:dupl
 package category
 
 import (
@@ -93,7 +92,6 @@ func (h *Handler) UpdateCategory(ctx context.Context) (*npool.Category, error) {
 		ID:       h.ID,
 		ParentID: h.ParentID,
 		Name:     h.Name,
-		Slug:     h.Slug,
 		Enabled:  h.Enabled,
 	})
 

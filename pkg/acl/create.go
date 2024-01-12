@@ -26,7 +26,7 @@ func (h *Handler) CreateACL(ctx context.Context) (*npool.ACL, error) {
 		return nil, fmt.Errorf("invalid article")
 	}
 
-	info, err := aclmwcli.GetACLOnly(ctx, &aclmwpb.Conds{
+	exist, err = aclmwcli.ExistACLConds(ctx, &aclmwpb.Conds{
 		AppID:      &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
 		RoleID:     &basetypes.StringVal{Op: cruder.EQ, Value: *h.RoleID},
 		ArticleKey: &basetypes.StringVal{Op: cruder.EQ, Value: *h.ArticleKey},
@@ -34,11 +34,11 @@ func (h *Handler) CreateACL(ctx context.Context) (*npool.ACL, error) {
 	if err != nil {
 		return nil, err
 	}
-	if info != nil {
-		return h.GetACL(ctx, info)
+	if exist {
+		return nil, fmt.Errorf("acl exist")
 	}
 
-	info, err = aclmwcli.CreateACL(ctx, &aclmwpb.ACLReq{
+	info, err := aclmwcli.CreateACL(ctx, &aclmwpb.ACLReq{
 		AppID:      h.AppID,
 		RoleID:     h.RoleID,
 		ArticleKey: h.ArticleKey,

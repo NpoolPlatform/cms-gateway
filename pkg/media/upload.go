@@ -7,6 +7,7 @@ import (
 	"io"
 	"path/filepath"
 
+	constant "github.com/NpoolPlatform/cms-gateway/pkg/const"
 	mediamwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/media"
 	"github.com/NpoolPlatform/go-service-framework/pkg/oss"
 	mediamwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/media"
@@ -37,6 +38,10 @@ func (h *createHandler) uploadFile(ctx context.Context) (string, error) {
 	fileBytes, err := io.ReadAll(h.FileData)
 	if err != nil {
 		return "", err
+	}
+
+	if len(fileBytes) > constant.MaxUploadFileSize {
+		return "", fmt.Errorf("file out of size")
 	}
 
 	if err := oss.PutObject(ctx, key, fileBytes, true); err != nil {

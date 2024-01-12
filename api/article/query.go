@@ -13,7 +13,6 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/cms/v1"
 	npool "github.com/NpoolPlatform/message/npool/cms/gw/v1/article"
 	"github.com/google/uuid"
-	"google.golang.org/grpc/metadata"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -21,42 +20,22 @@ import (
 
 func init() {
 	mux := servermux.AppServerMux()
-	mux.HandleFunc("/v1/t/", Content)
+	mux.HandleFunc("/v1/c/", Content)
 }
 
 func Content(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	host := r.Host
-	fmt.Println("host: ", host)
 	parts := strings.Split(path, "/")
 
-	// 获取 HTTP 请求头部信息
-	headers := r.Header
-
-	// 遍历 HTTP 请求头部信息
-	fmt.Println("header: ")
-	for name, values := range headers {
-		// 遍历每个头部信息的值
-		for _, value := range values {
-			fmt.Printf("%s: %s\n", name, value)
-		}
-	}
 	nilUUID := uuid.Nil.String()
 	appID := r.Header.Get("X-App-Id")
 	userID := r.Header.Get("X-User-Id")
-	fmt.Println("appID====", appID)
-	fmt.Println("userID====", userID)
 	if appID == "" {
 		appID = nilUUID
 	}
 	if userID == "" {
 		userID = nilUUID
-	}
-	fmt.Println("appID=====", appID)
-	fmt.Println("userID=====", userID)
-
-	for i, item := range parts {
-		fmt.Printf("i: %v, item: %v\n", i, item)
 	}
 
 	var nonEmptyParts []string
@@ -64,10 +43,6 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		if part != "" {
 			nonEmptyParts = append(nonEmptyParts, part)
 		}
-	}
-	fmt.Println("nonEmptyParts: ", nonEmptyParts)
-	for i, item := range nonEmptyParts {
-		fmt.Printf("i: %v, nonitem: %v\n", i, item)
 	}
 
 	minPathLength := 3
@@ -79,7 +54,6 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	for i := 3; i < len(nonEmptyParts); i++ {
 		contentURL = fmt.Sprintf("%v/%v", contentURL, nonEmptyParts[i])
 	}
-	fmt.Println("contentURL: ", contentURL)
 	ctx := r.Context()
 	handler, err := article1.NewHandler(
 		ctx,
@@ -108,55 +82,6 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, "%v", info)
-}
-
-func (s *Server) GetContent(ctx context.Context, in *npool.GetContentRequest) (*npool.GetContentResponse, error) {
-	host := ""
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		logger.Sugar().Errorw(
-			"GetContent",
-			"In", in,
-			"Error", "invalid host",
-		)
-		return &npool.GetContentResponse{}, status.Error(codes.InvalidArgument, "invalid host")
-	}
-	headHost, ok := md["x-forwarded-host"]
-	if !ok {
-		logger.Sugar().Errorw(
-			"GetContent",
-			"In", in,
-			"Error", "invalid host",
-		)
-		return &npool.GetContentResponse{}, status.Error(codes.InvalidArgument, "invalid host")
-	}
-	host = headHost[0]
-	handler, err := article1.NewHandler(
-		ctx,
-		article1.WithHost(&host, true),
-		article1.WithContentURL(&in.ContentURL, true),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetContent",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetContentResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := handler.GetContent(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetContent",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetContentResponse{}, status.Error(codes.Internal, err.Error())
-	}
-	return &npool.GetContentResponse{
-		Info: info,
-	}, nil
 }
 
 func (s *Server) GetContentList(ctx context.Context, in *npool.GetContentListRequest) (*npool.GetContentListResponse, error) {

@@ -57,7 +57,6 @@ func (h *createHandler) getCategoryFullSlug(ctx context.Context, id string) (str
 		if category == nil {
 			return "", fmt.Errorf("invalid categoryid")
 		}
-		fmt.Println("category: ", category)
 		if fullSlug == "" {
 			fullSlug = category.Slug
 		} else {
@@ -137,7 +136,6 @@ func (h *createHandler) createArticle(ctx context.Context) (*articlemwpb.Article
 		Host:       h.Host,
 		ISO:        h.ISO,
 		ContentURL: h.ContentURL,
-		ACLEnabled: h.ACLEnabled,
 	})
 	if err != nil {
 		return nil, err
