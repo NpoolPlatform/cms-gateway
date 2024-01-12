@@ -48,6 +48,7 @@ func (h *createHandler) checkTitle(ctx context.Context) error {
 	latest := true
 	exist, err := articlemwcli.ExistArticleConds(ctx, &articlemwpb.Conds{
 		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+		ISO:    &basetypes.StringVal{Op: cruder.EQ, Value: *h.ISO},
 		Title:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.Title},
 		Latest: &basetypes.BoolVal{Op: cruder.EQ, Value: latest},
 	})
@@ -167,10 +168,10 @@ func (h *Handler) CreateArticle(ctx context.Context) (*articlemwpb.Article, erro
 	if err := handler.checkCategory(ctx); err != nil {
 		return nil, err
 	}
-	if err := handler.checkTitle(ctx); err != nil {
+	if err := handler.getISO(ctx); err != nil {
 		return nil, err
 	}
-	if err := handler.getISO(ctx); err != nil {
+	if err := handler.checkTitle(ctx); err != nil {
 		return nil, err
 	}
 	if err := handler.uploadContent(ctx); err != nil {

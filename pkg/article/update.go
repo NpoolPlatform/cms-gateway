@@ -65,6 +65,7 @@ func (h *updateHandler) checkTitle(ctx context.Context) error {
 	exist, err := articlemwcli.ExistArticleConds(ctx, &articlemwpb.Conds{
 		EntID:  &basetypes.StringVal{Op: cruder.NEQ, Value: *h.EntID},
 		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+		ISO:    &basetypes.StringVal{Op: cruder.EQ, Value: h.article.ISO},
 		Title:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.Title},
 		Latest: &basetypes.BoolVal{Op: cruder.EQ, Value: latest},
 	})
