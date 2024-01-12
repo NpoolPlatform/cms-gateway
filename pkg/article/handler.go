@@ -105,6 +105,11 @@ func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 		if err != nil {
 			return err
 		}
+		nilUUID := uuid.Nil.String()
+		if *id == nilUUID {
+			h.AppID = id
+			return nil
+		}
 		exist, err := appcli.ExistApp(ctx, *id)
 		if err != nil {
 			return err
