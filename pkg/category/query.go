@@ -106,6 +106,7 @@ func (h *Handler) GetCategoryExt(ctx context.Context, row *categorymwpb.Category
 		Name:     row.Name,
 		Slug:     row.Slug,
 		FullSlug: fullSlug,
+		Enabled:  row.Enabled,
 	}
 
 	return info, nil
