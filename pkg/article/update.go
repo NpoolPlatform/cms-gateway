@@ -1,3 +1,4 @@
+//nolint:dupl
 package article
 
 import (
@@ -13,7 +14,6 @@ import (
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	articlemwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/article"
-	categorymwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/category"
 	applangmwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/applang"
 	"github.com/google/uuid"
 )
@@ -78,43 +78,28 @@ func (h *updateHandler) checkTitle(ctx context.Context) error {
 	return nil
 }
 
-func (h *updateHandler) getCategories(ctx context.Context, id string, level int32) ([]*categorymwpb.Category, error) {
-	categories := []*categorymwpb.Category{}
-	category, err := categorymwcli.GetCategory(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if category == nil {
-		return nil, fmt.Errorf("invalid categoryid")
-	}
-	categories = append(categories, category)
-
-	nullUUID := uuid.Nil.String()
-	if category.ParentID != nullUUID {
-		parentCategories, err := h.getCategories(ctx, category.ParentID, level+1)
+func (h *updateHandler) getCategoryFullSlug(ctx context.Context, id string) (string, error) {
+	fullSlug := ""
+	for {
+		category, err := categorymwcli.GetCategory(ctx, id)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		categories = append(categories, parentCategories...)
-	}
-	return categories, nil
-}
-
-func (h *updateHandler) getGategorySlugs(ctx context.Context) (string, error) {
-	categories, err := h.getCategories(ctx, *h.CategoryID, 0)
-	if err != nil {
-		return "", err
-	}
-	categorySlugs := ""
-
-	for index, info := range categories {
-		if index == 0 {
-			categorySlugs = info.Slug
-			continue
+		if category == nil {
+			return "", fmt.Errorf("invalid categoryid")
 		}
-		categorySlugs = fmt.Sprintf("%v/%v", categorySlugs, info.Slug)
+		if fullSlug == "" {
+			fullSlug = category.Slug
+		} else {
+			fullSlug = fmt.Sprintf("%v/%v", category.Slug, fullSlug)
+		}
+		nullUUID := uuid.Nil.String()
+		if category.ParentID == nullUUID {
+			break
+		}
+		id = category.ParentID
 	}
-	return categorySlugs, nil
+	return fullSlug, nil
 }
 
 func (h *updateHandler) getISO(ctx context.Context) error {
@@ -164,7 +149,7 @@ func (h *updateHandler) checkContent(ctx context.Context) error {
 		return nil
 	}
 
-	cateGorySlugs, err := h.getGategorySlugs(ctx)
+	cateGorySlugs, err := h.getCategoryFullSlug(ctx, *h.CategoryID)
 	if err != nil {
 		return err
 	}
