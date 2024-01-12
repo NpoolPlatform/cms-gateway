@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	articlemwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/article"
 	categorymwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/category"
 	applangmwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/applang"
@@ -18,6 +19,18 @@ import (
 
 type createHandler struct {
 	*Handler
+}
+
+func (h *createHandler) checkAppUser(ctx context.Context) error {
+	exist, err := usermwcli.ExistUser(ctx, *h.AppID, *h.UserID)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return fmt.Errorf("invalid user")
+	}
+
+	return nil
 }
 
 func (h *createHandler) checkCategory(ctx context.Context) error {
@@ -80,7 +93,7 @@ func (h *createHandler) getISO(ctx context.Context) error {
 		return err
 	}
 	if info == nil {
-		return fmt.Errorf("invalid langID")
+		return fmt.Errorf("invalid langid")
 	}
 	h.ISO = &info.Lang
 	return nil
@@ -146,6 +159,10 @@ func (h *createHandler) createArticle(ctx context.Context) (*articlemwpb.Article
 func (h *Handler) CreateArticle(ctx context.Context) (*articlemwpb.Article, error) {
 	handler := &createHandler{
 		Handler: h,
+	}
+
+	if err := handler.checkAppUser(ctx); err != nil {
+		return nil, err
 	}
 	if err := handler.checkCategory(ctx); err != nil {
 		return nil, err

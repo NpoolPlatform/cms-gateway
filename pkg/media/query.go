@@ -26,30 +26,7 @@ func (h *Handler) GetMedias(ctx context.Context) ([]*mediamwpb.Media, uint32, er
 	return infos, total, nil
 }
 
-func (h *Handler) GetMedia(ctx context.Context) (string, error) {
-	info, err := mediamwcli.GetMediaOnly(ctx, &mediamwpb.Conds{
-		AppID:    &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
-		MediaURL: &basetypes.StringVal{Op: cruder.EQ, Value: *h.FileName},
-	})
-	if err != nil {
-		return "", err
-	}
-	if info == nil {
-		return "", fmt.Errorf("not found")
-	}
-	key := fmt.Sprintf("media/%v/%v", *h.AppID, *h.FileName)
-	content, err := oss.GetObject(ctx, key, true)
-	if err != nil {
-		return "", err
-	}
-	if content == nil {
-		return "", fmt.Errorf("no content")
-	}
-
-	return string(content), nil
-}
-
-func (h *Handler) GetFile(ctx context.Context) ([]byte, error) {
+func (h *Handler) GetMedia(ctx context.Context) ([]byte, error) {
 	info, err := mediamwcli.GetMediaOnly(ctx, &mediamwpb.Conds{
 		AppID:    &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
 		MediaURL: &basetypes.StringVal{Op: cruder.EQ, Value: *h.FileName},

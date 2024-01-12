@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	constant "github.com/NpoolPlatform/cms-gateway/pkg/const"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/cms/v1"
 	articlemw "github.com/NpoolPlatform/message/npool/cms/mw/v1/article"
@@ -103,6 +104,13 @@ func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 		_, err := uuid.Parse(*id)
 		if err != nil {
 			return err
+		}
+		exist, err := appcli.ExistApp(ctx, *id)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return fmt.Errorf("invalid app")
 		}
 		h.AppID = id
 		return nil

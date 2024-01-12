@@ -1,4 +1,3 @@
-//nolint:dupl
 package media
 
 import (
@@ -7,6 +6,7 @@ import (
 	"io"
 	"path/filepath"
 
+	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	constant "github.com/NpoolPlatform/cms-gateway/pkg/const"
 	mediamwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/media"
 	"github.com/NpoolPlatform/go-service-framework/pkg/oss"
@@ -14,11 +14,23 @@ import (
 	"github.com/google/uuid"
 )
 
-type createHandler struct {
+type uploadHandler struct {
 	*Handler
 }
 
-func (h *createHandler) checkFileExt() error {
+func (h *uploadHandler) checkAppUser(ctx context.Context) error {
+	exist, err := usermwcli.ExistUser(ctx, *h.AppID, *h.UserID)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return fmt.Errorf("invalid user")
+	}
+
+	return nil
+}
+
+func (h *uploadHandler) checkFileExt() error {
 	if h.FileName == nil {
 		return fmt.Errorf("invalid name")
 	}
@@ -27,7 +39,7 @@ func (h *createHandler) checkFileExt() error {
 	return nil
 }
 
-func (h *createHandler) uploadFile(ctx context.Context) (string, error) {
+func (h *uploadHandler) uploadFile(ctx context.Context) (string, error) {
 	id := uuid.NewString()
 	if h.EntID == nil {
 		h.EntID = &id
@@ -51,7 +63,7 @@ func (h *createHandler) uploadFile(ctx context.Context) (string, error) {
 	return mediaURL, nil
 }
 
-func (h *createHandler) uploadMedia(ctx context.Context) (string, error) {
+func (h *uploadHandler) uploadMedia(ctx context.Context) (string, error) {
 	id := uuid.NewString()
 	if h.EntID == nil {
 		h.EntID = &id
@@ -72,7 +84,7 @@ func (h *createHandler) uploadMedia(ctx context.Context) (string, error) {
 }
 
 func (h *Handler) UploadMedia(ctx context.Context) (*mediamwpb.Media, error) {
-	handler := &createHandler{
+	handler := &uploadHandler{
 		Handler: h,
 	}
 
@@ -96,10 +108,13 @@ func (h *Handler) UploadMedia(ctx context.Context) (*mediamwpb.Media, error) {
 }
 
 func (h *Handler) UploadFile(ctx context.Context) (*mediamwpb.Media, error) {
-	handler := &createHandler{
+	handler := &uploadHandler{
 		Handler: h,
 	}
 
+	if err := handler.checkAppUser(ctx); err != nil {
+		return nil, err
+	}
 	if err := handler.checkFileExt(); err != nil {
 		return nil, err
 	}

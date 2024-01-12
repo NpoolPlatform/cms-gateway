@@ -25,7 +25,7 @@ func (h *queryHandler) getContent(ctx context.Context) (string, error) {
 		return "", err
 	}
 	if content == nil {
-		return "", fmt.Errorf("no image")
+		return "", fmt.Errorf("without content")
 	}
 
 	return string(content), nil

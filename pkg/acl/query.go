@@ -81,7 +81,7 @@ func (h *Handler) GetACL(ctx context.Context, row *aclmwpb.ACL) (*npool.ACL, err
 	if err != nil {
 		return nil, err
 	}
-	if role != nil {
+	if role == nil {
 		return info, nil
 	}
 	info.Role = role.Role

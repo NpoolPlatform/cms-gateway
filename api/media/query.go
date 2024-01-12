@@ -55,7 +55,7 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info, err := handler.GetFile(ctx)
+	info, err := handler.GetMedia(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"GetMedia",
