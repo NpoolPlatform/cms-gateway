@@ -66,11 +66,11 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("not found page")
 	}
 	if info.ACLEnabled && len(info.ACLRoleIDs) == 0 {
-		return "", fmt.Errorf("permission define")
+		return "", fmt.Errorf("permission denied")
 	}
 	if info.ACLEnabled && len(info.ACLRoleIDs) != 0 {
 		if h.UserID == nil || h.AppID == nil {
-			return "", fmt.Errorf("permission define")
+			return "", fmt.Errorf("permission denied")
 		}
 		exist, err := roleusermwcli.ExistUserConds(ctx, &roleusermwpb.Conds{
 			AppID:   &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
@@ -81,7 +81,7 @@ func (h *Handler) GetContent(ctx context.Context) (string, error) {
 			return "", err
 		}
 		if !exist {
-			return "", fmt.Errorf("permission define")
+			return "", fmt.Errorf("permission denied")
 		}
 	}
 	h.Host = &info.Host
