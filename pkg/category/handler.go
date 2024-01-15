@@ -20,6 +20,7 @@ type Handler struct {
 	Name     *string
 	Slug     *string
 	Enabled  *bool
+	Index    *uint32
 	Reqs     []*categorymw.CategoryReq
 	Offset   int32
 	Limit    int32
@@ -168,6 +169,19 @@ func WithEnabled(enabled *bool, must bool) func(context.Context, *Handler) error
 			return nil
 		}
 		h.Enabled = enabled
+		return nil
+	}
+}
+
+func WithIndex(u *uint32, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid index")
+			}
+			return nil
+		}
+		h.Index = u
 		return nil
 	}
 }

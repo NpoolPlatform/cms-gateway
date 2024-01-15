@@ -93,6 +93,7 @@ func (h *Handler) UpdateCategory(ctx context.Context) (*npool.Category, error) {
 		ParentID: h.ParentID,
 		Name:     h.Name,
 		Enabled:  h.Enabled,
+		Index:    h.Index,
 	})
 
 	if err != nil {

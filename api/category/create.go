@@ -19,6 +19,7 @@ func (s *Server) CreateCategory(ctx context.Context, in *npool.CreateCategoryReq
 		category1.WithName(&in.Name, true),
 		category1.WithSlug(&in.Slug, true),
 		category1.WithEnabled(&in.Enabled, true),
+		category1.WithIndex(&in.Index, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -103,6 +103,7 @@ func (h *Handler) CreateCategory(ctx context.Context) (*npool.Category, error) {
 		Name:     h.Name,
 		Slug:     h.Slug,
 		Enabled:  h.Enabled,
+		Index:    h.Index,
 	})
 
 	if err != nil {
