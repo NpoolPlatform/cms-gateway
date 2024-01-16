@@ -31,6 +31,20 @@ func (h *queryHandler) getContent(ctx context.Context) (string, error) {
 	return string(content), nil
 }
 
+func (h *Handler) GetArticle(ctx context.Context) (*articlemwpb.Article, error) {
+	info, err := articlemwcli.GetArticleOnly(ctx, &articlemwpb.Conds{
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.EntID},
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if info == nil {
+		return nil, fmt.Errorf("invalid article")
+	}
+	return info, nil
+}
+
 func (h *Handler) GetArticles(ctx context.Context) ([]*articlemwpb.Article, uint32, error) {
 	conds := &articlemwpb.Conds{
 		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},

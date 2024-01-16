@@ -121,6 +121,36 @@ func (s *Server) GetContentList(ctx context.Context, in *npool.GetContentListReq
 	}, nil
 }
 
+func (s *Server) GetArticle(ctx context.Context, in *npool.GetArticleRequest) (*npool.GetArticleResponse, error) {
+	handler, err := article1.NewHandler(
+		ctx,
+		article1.WithEntID(&in.EntID, true),
+		article1.WithAppID(&in.AppID, true),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetArticle",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetArticleResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.GetArticle(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetArticle",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetArticleResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.GetArticleResponse{
+		Info: info,
+	}, nil
+}
+
 func (s *Server) GetArticles(ctx context.Context, in *npool.GetArticlesRequest) (*npool.GetArticlesResponse, error) {
 	handler, err := article1.NewHandler(
 		ctx,
