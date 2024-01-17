@@ -35,6 +35,7 @@ func (h *queryHandler) buildCategoryList(infos []*categorymwpb.Category, parentI
 			Name:     info.Name,
 			Slug:     info.Slug,
 			Enabled:  info.Enabled,
+			Index:    info.Index,
 			FullSlug: fullSlug,
 		}
 		h.categoryMap[category.EntID] = category
@@ -59,6 +60,7 @@ func (h *queryHandler) buildCategoryTree(infos []*categorymwpb.Category, parentI
 			Name:     info.Name,
 			Slug:     info.Slug,
 			FullSlug: fullSlug,
+			Index:    info.Index,
 			Children: children,
 		}
 		result = append(result, category)
@@ -107,6 +109,7 @@ func (h *Handler) GetCategoryExt(ctx context.Context, row *categorymwpb.Category
 		Slug:     row.Slug,
 		FullSlug: fullSlug,
 		Enabled:  row.Enabled,
+		Index:    row.Index,
 	}
 
 	return info, nil
@@ -157,6 +160,7 @@ func (h *Handler) GetCategories(ctx context.Context) ([]*npool.Category, uint32,
 			Name:     info.Name,
 			Slug:     info.Slug,
 			Enabled:  info.Enabled,
+			Index:    info.Index,
 			FullSlug: info.FullSlug,
 		}
 		infos = append(infos, category)
