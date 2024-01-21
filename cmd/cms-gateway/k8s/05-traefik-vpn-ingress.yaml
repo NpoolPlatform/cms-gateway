@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: cms-gateway-traefik-vpn-ingress
+  namespace: kube-system
+  annotations:
+    k8s.kuboard.cn/displayName: cms-gateway-traefik-vpn
+    k8s.kuboard.cn/workload: cms-gateway-traefik-vpn
+    kubernetes.io/ingress.class: "traefik-internet-vpn"
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares:
+      kube-system-strip-cms-gateway-prefix@kubernetescrd,
+      kube-system-common-headers@kubernetescrd,
+      kube-system-headers-appid-to-body@kubernetescrd,
+      kube-system-headers-userid-to-body@kubernetescrd,
+      kube-system-headers-app-login-token-to-body@kubernetescrd,
+      kube-system-app-rbac-auth@kubernetescrd
+
+spec:
+  rules:
+    - host: api.npool.top
+      http: &http_rules
+        paths:
+          - path: /api/cms
+            backend:
+              serviceName: cms-gateway
+              servicePort: 50810
+    - host: api.xpool.top
+      http: *http_rules
+    - host: api.development.npool.top
+      http: *http_rules
+    - host: api.jh-testing.npool.top
+      http: *http_rules

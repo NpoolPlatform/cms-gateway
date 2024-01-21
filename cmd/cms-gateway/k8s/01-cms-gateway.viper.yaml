@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cms-gateway-config
+  namespace: kube-system
+data:
+  service-conf: |
+    config:
+      hostname: "cms-gateway.npool.top"
+      http_port: 50810
+      grpc_port: 50811
+      healthz_port: 50812
+      prometheus_port: 50813
+      appid: "89089012783789789719823798127398"
+      serviceid: "7c2ed2d8-769e-11ed-9d5f-1e0b0807e211"
+      logdir: "./"
+      log_level: "warning"
+      apolloAccessKey: "0147fb70b815403790e8634b899fac07"

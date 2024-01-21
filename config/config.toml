@@ -1,0 +1,7 @@
+version="0.0.1"
+
+[cms]
+domain="cms"
+http-port=50810
+grpc-port=50811
+log-file="/var/log/cms.log"
