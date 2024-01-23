@@ -25,6 +25,13 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	parts := strings.Split(path, "/")
 
+	origin := r.Header.Get("Origin")
+	if origin != "" {
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Vary", "Origin")
+	}
+
 	var nonEmptyParts []string
 	for _, part := range parts {
 		if part != "" {
@@ -73,13 +80,6 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Header().Set("Content-Length", fmt.Sprint(len((decoded))))
 	w.Header().Set("Content-Disposition", "inline")
-
-	origin := r.Header.Get("Origin")
-	if origin != "" {
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Vary", "Origin")
-	}
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
