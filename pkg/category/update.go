@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	articlemwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/article"
 	categorymwcli "github.com/NpoolPlatform/cms-middleware/pkg/client/category"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/cms/gw/v1/category"
+	articlemwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/article"
 	categorymwpb "github.com/NpoolPlatform/message/npool/cms/mw/v1/category"
 )
 
@@ -16,7 +18,7 @@ type updateHandler struct {
 	oldInfo *categorymwpb.Category
 }
 
-func (h *updateHandler) checkParentExist(ctx context.Context) error {
+func (h *updateHandler) checkParentID(ctx context.Context) error {
 	if h.ParentID == nil {
 		return nil
 	}
@@ -30,6 +32,20 @@ func (h *updateHandler) checkParentExist(ctx context.Context) error {
 	if !exist {
 		return fmt.Errorf("invalid parentid")
 	}
+
+	latest := true
+	exist, err = articlemwcli.ExistArticleConds(ctx, &articlemwpb.Conds{
+		AppID:      &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+		CategoryID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.EntID},
+		Latest:     &basetypes.BoolVal{Op: cruder.EQ, Value: latest},
+	})
+	if err != nil {
+		return err
+	}
+	if exist && (*h.ParentID != h.oldInfo.ParentID) {
+		return fmt.Errorf("invalid category parentid")
+	}
+
 	return nil
 }
 
@@ -76,11 +92,11 @@ func (h *Handler) UpdateCategory(ctx context.Context) (*npool.Category, error) {
 		Handler: h,
 	}
 
-	if err := handler.checkParentExist(ctx); err != nil {
+	if err := handler.checkCagegoryExist(ctx); err != nil {
 		return nil, err
 	}
 
-	if err := handler.checkCagegoryExist(ctx); err != nil {
+	if err := handler.checkParentID(ctx); err != nil {
 		return nil, err
 	}
 
