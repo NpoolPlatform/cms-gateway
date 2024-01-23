@@ -68,6 +68,7 @@ func (h *updateHandler) checkTitle(ctx context.Context) error {
 		ISO:    &basetypes.StringVal{Op: cruder.EQ, Value: h.article.ISO},
 		Title:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.Title},
 		Latest: &basetypes.BoolVal{Op: cruder.EQ, Value: latest},
+		Host:   &basetypes.StringVal{Op: cruder.EQ, Value: h.article.Host},
 	})
 	if err != nil {
 		return err
@@ -213,7 +214,6 @@ func (h *Handler) UpdateArticle(ctx context.Context) (*articlemwpb.Article, erro
 	return articlemwcli.UpdateArticle(ctx, &articlemwpb.ArticleReq{
 		ID:         h.ID,
 		ISO:        h.ISO,
-		CategoryID: h.CategoryID,
 		AuthorID:   h.UserID,
 		Title:      h.Title,
 		Subtitle:   h.Subtitle,

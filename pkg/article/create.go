@@ -52,6 +52,7 @@ func (h *createHandler) checkTitle(ctx context.Context) error {
 		ISO:    &basetypes.StringVal{Op: cruder.EQ, Value: *h.ISO},
 		Title:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.Title},
 		Latest: &basetypes.BoolVal{Op: cruder.EQ, Value: latest},
+		Host:   &basetypes.StringVal{Op: cruder.EQ, Value: *h.Host},
 	})
 	if err != nil {
 		return err
