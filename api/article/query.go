@@ -28,6 +28,13 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	host := r.Host
 	parts := strings.Split(path, "/")
 
+	origin := r.Header.Get("Origin")
+	if origin != "" {
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Vary", "Origin")
+	}
+
 	nilUUID := uuid.Nil.String()
 	appID := r.Header.Get("X-App-Id")
 	userID := r.Header.Get("X-User-Id")
@@ -81,12 +88,6 @@ func Content(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	origin := r.Header.Get("Origin")
-	if origin != "" {
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Vary", "Origin")
-	}
 	fmt.Fprintf(w, "%v", info)
 }
 
