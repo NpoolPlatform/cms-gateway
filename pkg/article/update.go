@@ -23,21 +23,6 @@ type updateHandler struct {
 	article *articlemwpb.Article
 }
 
-func (h *updateHandler) checkCategory(ctx context.Context) error {
-	if h.CategoryID == nil {
-		h.CategoryID = &h.article.CategoryID
-		return nil
-	}
-	exist, err := categorymwcli.ExistCategory(ctx, *h.CategoryID)
-	if err != nil {
-		return err
-	}
-	if !exist {
-		return fmt.Errorf("invalid category")
-	}
-	return nil
-}
-
 func (h *updateHandler) checkArticleExist(ctx context.Context) error {
 	info, err := articlemwcli.GetArticleOnly(ctx, &articlemwpb.Conds{
 		ID:    &basetypes.Uint32Val{Op: cruder.EQ, Value: *h.ID},
@@ -54,6 +39,7 @@ func (h *updateHandler) checkArticleExist(ctx context.Context) error {
 		return fmt.Errorf("invalid old version article")
 	}
 	h.article = info
+	h.CategoryID = &info.CategoryID
 	return nil
 }
 
@@ -178,9 +164,6 @@ func (h *Handler) UpdateArticle(ctx context.Context) (*articlemwpb.Article, erro
 	}
 
 	if err := handler.checkArticleExist(ctx); err != nil {
-		return nil, err
-	}
-	if err := handler.checkCategory(ctx); err != nil {
 		return nil, err
 	}
 	if err := handler.checkTitle(ctx); err != nil {

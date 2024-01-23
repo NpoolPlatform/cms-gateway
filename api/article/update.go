@@ -17,7 +17,6 @@ func (s *Server) UpdateArticle(ctx context.Context, in *npool.UpdateArticleReque
 		article1.WithID(&in.ID, true),
 		article1.WithEntID(&in.EntID, true),
 		article1.WithAppID(&in.AppID, true),
-		article1.WithCategoryID(in.CategoryID, false),
 		article1.WithUserID(in.UserID, false),
 		article1.WithTitle(in.Title, false),
 		article1.WithSubtitle(in.Subtitle, false),
