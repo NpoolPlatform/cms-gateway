@@ -28,13 +28,10 @@ func Content(w http.ResponseWriter, r *http.Request) {
 	host := r.Host
 	parts := strings.Split(path, "/")
 
-	origin := r.Header.Get("Origin")
-	if origin != "" {
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Access-Control-Expose-Headers", "*")
-		w.Header().Set("Vary", "Origin")
-	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Expose-Headers", "*")
+	w.Header().Set("Vary", "Origin")
 
 	nilUUID := uuid.Nil.String()
 	appID := r.Header.Get("X-App-Id")
