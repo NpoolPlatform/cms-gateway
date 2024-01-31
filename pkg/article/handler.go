@@ -3,6 +3,7 @@ package article
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	constant "github.com/NpoolPlatform/cms-gateway/pkg/const"
@@ -198,10 +199,11 @@ func WithTitle(title *string, must bool) func(context.Context, *Handler) error {
 			}
 			return nil
 		}
-		if *title == "" {
+		noSpacetitle := strings.TrimSpace(*title)
+		if noSpacetitle == "" {
 			return fmt.Errorf("invalid title")
 		}
-		h.Title = title
+		h.Title = &noSpacetitle
 		return nil
 	}
 }
