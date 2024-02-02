@@ -28,8 +28,8 @@ type CMS struct {
 // set default config
 var config = &Config{
 	CMS: CMS{
-		HTTPPort: 50810,
-		GrpcPort: 50811,
+		GrpcPort: 50814,
+		HTTPPort: 50815,
 	},
 }
 

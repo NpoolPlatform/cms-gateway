@@ -69,5 +69,11 @@ spec:
     - name: prometheus
       port: 50813
       targetPort: 50813
+    - name: pub_grpc
+      port: 50814
+      targetPort: 50814
+    - name: pub_http
+      port: 50815
+      targetPort: 50815
   selector:
     app: cms-gateway
