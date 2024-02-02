@@ -11,6 +11,8 @@ data:
       grpc_port: 50811
       healthz_port: 50812
       prometheus_port: 50813
+      pub_grpc_port: 50814
+      pub_http_port: 50815
       appid: "89089012783789789719823798127398"
       serviceid: "7c2ed2d8-769e-11ed-9d5f-1e0b0807e211"
       logdir: "./"
