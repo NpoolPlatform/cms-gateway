@@ -45,7 +45,7 @@ var runCmd = &cli.Command{
 }
 
 func run(ctx context.Context) error {
-	if err := oss.Init(ossconst.SecretStoreKey, BukectKey); err != nil {
+	if err := oss.Init(ossconst.CMSStoreKey, BukectKey); err != nil {
 		return err
 	}
 	if err := migrator.Migrate(ctx); err != nil {
