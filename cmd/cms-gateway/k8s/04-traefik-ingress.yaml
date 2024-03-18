@@ -47,6 +47,8 @@ spec:
       http: *http_rules
     - host: api.mimo.biz
       http: *http_rules
+    - host: api.epool.tech
+      http: *http_rules
 
 ---
 
@@ -105,6 +107,8 @@ spec:
     - host: api.cryptomore.io
       http: *http_rules
     - host: api.mimo.biz
+      http: *http_rules
+    - host: api.epool.tech
       http: *http_rules
 
 ---
@@ -176,4 +180,6 @@ spec:
     - host: api.cryptomore.io
       http: *http_rules
     - host: api.mimo.biz
+      http: *http_rules
+    - host: api.epool.tech
       http: *http_rules
